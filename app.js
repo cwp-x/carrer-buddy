@@ -32,13 +32,13 @@ const Toast = (() => {
 function _applyLayout(page) {
   const app = document.getElementById("app");
   if (!app) return;
-  const noNavPages = ["auth", "role-select", "plan-select"];
-  if (noNavPages.includes(page)) {
-    app.style.marginLeft = "0";
+  const noNavPages      = ["auth", "role-select", "plan-select"];
+  const fullScreenPages = ["question"];
+  if (noNavPages.includes(page) || fullScreenPages.includes(page)) {
+    app.style.marginLeft    = "0";
     app.style.paddingBottom = "0";
   } else {
-    // Sidebar is 240px wide on desktop, bottom nav on mobile
-    app.style.marginLeft = window.innerWidth > 900 ? "240px" : "0";
+    app.style.marginLeft    = window.innerWidth > 900 ? "240px" : "0";
     app.style.paddingBottom = window.innerWidth <= 900 ? "72px" : "0";
   }
 }
