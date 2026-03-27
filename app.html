@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CarrerBuddy — AI Career Platform</title>
+  <meta name="description" content="AI-powered career platform for job seekers and hirers"/>
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/layout.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+</head>
+<body>
+
+  <!-- App Root -->
+  <div id="app"></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- ── JS: Config & State (load first) ── -->
+  <script src="js/config/config.js"></script>
+  <script src="js/store/app-state.js"></script>
+
+  <!-- ── JS: Utils ── -->
+  <script src="js/utils/storage.js"></script>
+
+  <!-- ── JS: Auth ── -->
+  <script src="js/auth/session.js"></script>
+  <script src="js/auth/login.js"></script>
+  <script src="js/auth/signup.js"></script>
+  <script src="js/auth/google-mock.js"></script>
+
+  <!-- ── JS: Data ── -->
+  <script src="js/data/plans.js"></script>
+  <script src="js/data/users.js"></script>
+  <script src="js/data/jobs.js"></script>
+  <script src="js/data/candidates.js"></script>
+  <script src="js/data/posts.js"></script>
+  <script src="js/data/questions.js"></script>
+
+  <!-- ── JS: AI ── -->
+  <script src="js/ai/scoring.js"></script>
+  <script src="js/ai/analyzer.js"></script>
+
+  <!-- ── JS: Utils (navigation & code runner need data loaded first) ── -->
+  <script src="js/utils/code-runner.js"></script>
+
+  <!-- ── JS: Components ── -->
+  <script src="js/components/navbar.js"></script>
+  <script src="js/components/job-card.js"></script>
+  <script src="js/components/candidate-card.js"></script>
+  <script src="js/components/post-card.js"></script>
+  <script src="js/components/ai-score-card.js"></script>
+  <script src="js/components/plan-selector.js"></script>
+  <script src="js/components/question-card.js"></script>
+
+  <!-- ── JS: Pages ── -->
+  <script src="js/pages/auth-page.js"></script>
+  <script src="js/pages/home.js"></script>
+  <script src="js/pages/jobs-page.js"></script>
+  <script src="js/pages/posts-page.js"></script>
+  <script src="js/pages/hire.js"></script>
+  <script src="js/pages/profile.js"></script>
+
+  <!-- ── JS: Navigation (needs pages loaded) ── -->
+  <script src="js/utils/navigation.js"></script>
+
+  <!-- ── JS: App Entry ── -->
+  <script src="app.js"></script>
+
+</body>
+</html>
