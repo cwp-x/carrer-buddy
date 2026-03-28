@@ -43,6 +43,35 @@ function _applyLayout(page) {
   }
 }
 
+// ── DATA MIGRATION ────────────────────────────────────────────────────────────
+// Fix old seed data: change postedBy from "u_seed_002" to "seed"
+// so hirers don't incorrectly see ALL seed jobs as "their" jobs
+function _migrateData() {
+  const MIGRATION_KEY = "cb_migrated_v2";
+  if (Storage.get(MIGRATION_KEY)) return;
+
+  // Fix jobs: seed jobs had postedBy = "u_seed_002", change to "seed"
+  const jobs = Storage.get(CONFIG.STORAGE_KEYS.JOBS, []);
+  if (jobs.length > 0) {
+    const SEED_IDS = ["job_001","job_002","job_003","job_004","job_005","job_006","job_007","job_008","job_009"];
+    const fixed = jobs.map(j =>
+      SEED_IDS.includes(j.id) ? { ...j, postedBy: "seed" } : j
+    );
+    Storage.set(CONFIG.STORAGE_KEYS.JOBS, fixed);
+  }
+
+  // Fix users: reset jobPostsUsed for seed hirer to 0
+  const users = Storage.get(CONFIG.STORAGE_KEYS.USERS, []);
+  if (users.length > 0) {
+    const fixedUsers = users.map(u =>
+      u.id === "u_seed_002" ? { ...u, jobPostsUsed: 0 } : u
+    );
+    Storage.set(CONFIG.STORAGE_KEYS.USERS, fixedUsers);
+  }
+
+  Storage.set(MIGRATION_KEY, true);
+}
+
 // ── APP INIT ──────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Apply saved theme
@@ -55,22 +84,25 @@ document.addEventListener("DOMContentLoaded", () => {
   JobsData.seedIfEmpty();
   PostsData.seedIfEmpty();
 
-  // 3. Restore session
+  // 3. Migrate old data (fix postedBy on seed jobs)
+  _migrateData();
+
+  // 4. Restore session
   const session = Session.get();
   if (session) AppState.set("currentUser", session);
 
-  // 4. Apply layout whenever page changes
+  // 5. Apply layout whenever page changes
   AppState.subscribe("currentPage", (page) => {
     _applyLayout(page);
   });
 
-  // 5. Re-apply layout on resize
+  // 6. Re-apply layout on resize
   window.addEventListener("resize", () => {
     const page = AppState.get("currentPage");
     _applyLayout(page);
   });
 
-  // 6. Route to correct starting page
+  // 7. Route to correct starting page
   if (!session) {
     Navigate.to("auth");
   } else if (!Session.hasRole()) {
