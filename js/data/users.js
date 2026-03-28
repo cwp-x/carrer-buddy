@@ -35,7 +35,7 @@ const UsersData = (() => {
         company: "TechCorp India",
         bio: "HR Lead at TechCorp",
         unlockedContacts: [],
-        jobPostsUsed: 2,
+        jobPostsUsed: 0,   // ← fixed: starts at 0
         appliedJobs: [],
         createdAt: Date.now() - 86400000 * 20,
       },
@@ -49,12 +49,12 @@ const UsersData = (() => {
   }
 
   function getById(id) {
-    return getAll().find((u) => u.id === id) || null;
+    return getAll().find(u => u.id === id) || null;
   }
 
   function updateUser(id, fields) {
-    return Storage.update(CONFIG.STORAGE_KEYS.USERS, (users) =>
-      users.map((u) => (u.id === id ? { ...u, ...fields } : u))
+    return Storage.update(CONFIG.STORAGE_KEYS.USERS, users =>
+      users.map(u => (u.id === id ? { ...u, ...fields } : u))
     );
   }
 
