@@ -8,7 +8,7 @@ const JobsData = (() => {
       skills: ["HTML", "CSS", "JavaScript", "React"],
       description: "Build modern web interfaces for our SaaS platform.",
       salary: "₹6L – ₹10L", applications: 38, maxApplications: 100,
-      postedBy: "u_seed_002", status: "active",
+      postedBy: "seed", status: "active",
       postedAt: Date.now() - 86400000 * 2,
     },
     {
@@ -17,7 +17,7 @@ const JobsData = (() => {
       skills: ["Node.js", "MongoDB", "Express", "AWS"],
       description: "Develop scalable APIs and microservices.",
       salary: "₹8L – ₹14L", applications: 72, maxApplications: 100,
-      postedBy: "u_seed_002", status: "active",
+      postedBy: "seed", status: "active",
       postedAt: Date.now() - 86400000 * 5,
     },
     {
@@ -26,7 +26,7 @@ const JobsData = (() => {
       skills: ["Python", "ML", "TensorFlow", "SQL"],
       description: "Build ML models and data pipelines.",
       salary: "₹10L – ₹18L", applications: 100, maxApplications: 100,
-      postedBy: "u_seed_002", status: "closed",
+      postedBy: "seed", status: "closed",
       postedAt: Date.now() - 86400000 * 8,
     },
     {
@@ -35,7 +35,7 @@ const JobsData = (() => {
       skills: ["Figma", "Adobe XD", "Prototyping"],
       description: "Design intuitive user experiences.",
       salary: "₹5L – ₹8L", applications: 55, maxApplications: 100,
-      postedBy: "u_seed_002", status: "active",
+      postedBy: "seed", status: "active",
       postedAt: Date.now() - 86400000 * 3,
     },
     {
@@ -44,7 +44,7 @@ const JobsData = (() => {
       skills: ["Docker", "Kubernetes", "CI/CD", "Linux"],
       description: "Manage cloud infrastructure and deployments.",
       salary: "₹9L – ₹15L", applications: 21, maxApplications: 100,
-      postedBy: "u_seed_002", status: "active",
+      postedBy: "seed", status: "active",
       postedAt: Date.now() - 86400000 * 1,
     },
     {
@@ -53,7 +53,7 @@ const JobsData = (() => {
       skills: ["Kotlin", "Java", "Android SDK", "Firebase"],
       description: "Build high-performance Android applications.",
       salary: "₹7L – ₹12L", applications: 44, maxApplications: 100,
-      postedBy: "u_seed_002", status: "active",
+      postedBy: "seed", status: "active",
       postedAt: Date.now() - 86400000 * 4,
     },
     {
@@ -62,7 +62,7 @@ const JobsData = (() => {
       skills: ["Network Security", "Ethical Hacking", "SIEM"],
       description: "Protect systems from cyber threats.",
       salary: "₹8L – ₹13L", applications: 88, maxApplications: 100,
-      postedBy: "u_seed_002", status: "active",
+      postedBy: "seed", status: "active",
       postedAt: Date.now() - 86400000 * 6,
     },
     {
@@ -71,7 +71,7 @@ const JobsData = (() => {
       skills: ["Python", "PyTorch", "NLP", "Deep Learning"],
       description: "Research and deploy AI models at scale.",
       salary: "₹15L – ₹25L", applications: 12, maxApplications: 100,
-      postedBy: "u_seed_002", status: "active",
+      postedBy: "seed", status: "active",
       postedAt: Date.now() - 86400000 * 1,
     },
     {
@@ -80,11 +80,12 @@ const JobsData = (() => {
       skills: ["Product Strategy", "Agile", "Analytics", "Roadmapping"],
       description: "Lead product vision and cross-functional teams.",
       salary: "₹12L – ₹20L", applications: 63, maxApplications: 100,
-      postedBy: "u_seed_002", status: "active",
+      postedBy: "seed", status: "active",
       postedAt: Date.now() - 86400000 * 7,
     },
   ];
 
+  // ── Seed only if completely empty ─────────────────────────────────────────
   function seedIfEmpty() {
     const existing = Storage.get(CONFIG.STORAGE_KEYS.JOBS, []);
     if (existing.length === 0) {
@@ -97,41 +98,44 @@ const JobsData = (() => {
   }
 
   function getById(id) {
-    return getAll().find((j) => j.id === id) || null;
+    return getAll().find(j => j.id === id) || null;
   }
 
+  // Color logic: 1-49 green, 50-75 yellow, 76-100 red
   function getColor(applications) {
-    if (applications >= CONFIG.JOBS.MAX_APPLICATIONS) return "red";
-    if (applications >= CONFIG.JOBS.GREEN_THRESHOLD) return "yellow";
+    if (applications >= 76) return "red";
+    if (applications >= 50) return "yellow";
     return "green";
   }
 
   function apply(jobId, userId) {
     const jobs = getAll();
-    const job = jobs.find((j) => j.id === jobId);
+    const job  = jobs.find(j => j.id === jobId);
     if (!job) return { success: false, error: "Job not found." };
     if (job.applications >= CONFIG.JOBS.MAX_APPLICATIONS)
       return { success: false, error: "This job is closed." };
 
     const users = Storage.get(CONFIG.STORAGE_KEYS.USERS, []);
-    const user = users.find((u) => u.id === userId);
+    const user  = users.find(u => u.id === userId);
     if (!user) return { success: false, error: "User not found." };
     if (user.appliedJobs && user.appliedJobs.includes(jobId))
       return { success: false, error: "Already applied." };
 
-    // Increment applications
-    Storage.update(CONFIG.STORAGE_KEYS.JOBS, (list) =>
-      list.map((j) =>
+    // Increment applications count on job
+    Storage.update(CONFIG.STORAGE_KEYS.JOBS, list =>
+      list.map(j =>
         j.id === jobId
-          ? { ...j, applications: j.applications + 1,
-              status: j.applications + 1 >= 100 ? "closed" : j.status }
+          ? { ...j,
+              applications: j.applications + 1,
+              status: j.applications + 1 >= 100 ? "closed" : j.status
+            }
           : j
       )
     );
 
-    // Update user applied jobs
-    Storage.update(CONFIG.STORAGE_KEYS.USERS, (list) =>
-      list.map((u) =>
+    // Mark job as applied on user
+    Storage.update(CONFIG.STORAGE_KEYS.USERS, list =>
+      list.map(u =>
         u.id === userId
           ? { ...u, appliedJobs: [...(u.appliedJobs || []), jobId] }
           : u
@@ -142,14 +146,15 @@ const JobsData = (() => {
     return { success: true };
   }
 
+  // Add a new job posted by a hirer — visible to ALL (seekers + hirers)
   function addJob(jobData) {
-    const jobs = getAll();
+    const jobs   = getAll();
     const newJob = {
-      id: "job_" + Date.now(),
-      applications: 0,
+      id:              "job_" + Date.now(),
+      applications:    0,
       maxApplications: 100,
-      status: "active",
-      postedAt: Date.now(),
+      status:          "active",
+      postedAt:        Date.now(),
       ...jobData,
     };
     jobs.push(newJob);
@@ -157,9 +162,15 @@ const JobsData = (() => {
     return newJob;
   }
 
+  // Get jobs posted by a specific hirer userId
   function getByPoster(userId) {
-    return getAll().filter((j) => j.postedBy === userId);
+    return getAll().filter(j => j.postedBy === userId);
   }
 
-  return { seedIfEmpty, getAll, getById, getColor, apply, addJob, getByPoster };
+  // Get only active jobs (for seeker feed)
+  function getActive() {
+    return getAll().filter(j => j.status !== "closed");
+  }
+
+  return { seedIfEmpty, getAll, getActive, getById, getColor, apply, addJob, getByPoster };
 })();
